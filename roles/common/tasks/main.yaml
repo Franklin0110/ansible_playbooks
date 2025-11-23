@@ -1,0 +1,18 @@
+- name: install docker
+  apt:
+    name: docker.io=28.2.2-0ubuntu1~24.04.1
+    state: present
+    update_cache: yes
+
+- name: Get the kubelet file
+  get:
+    url: "https://dl.k8s.io/release/v1.34.2/bin/linux/amd64/kubectl"
+
+- name: Generate the verification and execute sha256sum --check
+  shell: 'echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check'
+  args:
+    warn: false
+  register: checksum_result
+
+- name: Install the package for kubelet into the shell
+  shell: 'sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl'

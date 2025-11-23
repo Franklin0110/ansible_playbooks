@@ -1,0 +1,31 @@
+- name: install docker dependencies
+  apt:
+    name:
+    - docker.io=28.2.2-0ubuntu1~24.04.1
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gpg
+    state: present
+    update_cache: yes
+
+- name: Install the package for kubelet into the shell
+  shell: 'curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg'
+
+- name: Install the package for kubelet into the shell
+  shell: "echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list"
+
+- name: install docker dependencies
+  apt:
+    name:
+    - kubelet
+    - kubeadm
+    - kubectl
+    state: present
+    update_cache: yes
+
+- name: 1. Asegurar que Kubelet está activo y habilitado
+  service:
+    name: kubelet
+    state: started
+    enabled: yes

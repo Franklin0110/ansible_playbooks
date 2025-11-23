@@ -1,49 +1,45 @@
 ---
-- name: Instalación y Test de Nginx en Ubuntu
-  become: yes # Necesario para instalar paquetes (sudo)
+# 1. Actualizar repositorios e instalar Nginx
+- name: Actualizar caché de apt e instalar Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
 
-  tasks:
-  # 1. Actualizar repositorios e instalar Nginx
-  - name: Actualizar caché de apt e instalar Nginx
-    apt:
-      name: nginx
-      state: present
-      update_cache: yes
+# 2. Asegurar que el servicio esté corriendo
+- name: Asegurar que el servicio Nginx está activo y habilitado
+  service:
+    name: nginx
+    state: started
+    enabled: yes
 
-  # 2. Asegurar que el servicio esté corriendo
-  - name: Asegurar que el servicio Nginx está activo y habilitado
-    service:
-      name: nginx
-      state: started
-      enabled: yes
+# 3. Crear una página personalizada (para ver que cambiamos algo)
+- name: Crear index.html de prueba
+  copy:
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <head><title>Prueba Ansible</title></head>
+      <body>
+      <h1>¡Funciona! Nginx instalado por Ansible.</h1>
+      <p>Servidor configurado exitosamente.</p>
+      </body>
+      </html>
+    dest: /var/www/html/index.html
+    owner: www-data
+    group: www-data
+    mode: '0644'
 
-  # 3. Crear una página personalizada (para ver que cambiamos algo)
-  - name: Crear index.html de prueba
-    copy:
-      content: |
-        <!DOCTYPE html>
-        <html>
-        <head><title>Prueba Ansible</title></head>
-        <body>
-        <h1>¡Funciona! Nginx instalado por Ansible.</h1>
-        <p>Servidor configurado exitosamente.</p>
-        </body>
-        </html>
-      dest: /var/www/html/index.html
-      owner: www-data
-      group: www-data
-      mode: '0644'
+# ---------------------------------------------------------
+# TEST: Verificación automática
+# ---------------------------------------------------------
+- name: TEST - Verificar que Nginx responde localmente (HTTP 200)
+  uri:
+    url: http://localhost
+    return_content: yes
+    status_code: 200
+  register: page_response
 
-  # ---------------------------------------------------------
-  # TEST: Verificación automática
-  # ---------------------------------------------------------
-  - name: TEST - Verificar que Nginx responde localmente (HTTP 200)
-    uri:
-      url: http://localhost
-      return_content: yes
-      status_code: 200
-    register: page_response
-
-  - name: Resultado del Test
-    debug:
-      msg: "¡Éxito! El servidor respondió con código: {{ page_response.status }}"
+- name: Resultado del Test
+  debug:
+    msg: "¡Éxito! El servidor respondió con código: {{ page_response.status }}"

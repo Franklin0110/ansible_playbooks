@@ -23,6 +23,7 @@
       <body>
       <h1>¡Funciona! Nginx instalado por Ansible.</h1>
       <p>Servidor configurado exitosamente.</p>
+      <p>Esto es una prueba de cambio posible.</p>
       </body>
       </html>
     dest: /var/www/html/index.html

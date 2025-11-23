@@ -1,6 +1,6 @@
 ---
 - name: Instalación y Test de Nginx en Ubuntu
-  hosts: webservers
+  hosts: machines
   become: yes # Necesario para instalar paquetes (sudo)
 
   tasks:

@@ -4,9 +4,11 @@
     state: present
     update_cache: yes
 
-- name: Get the kubelet file
-  get:
+- name: Get the kubectl file
+  get_url:
     url: "https://dl.k8s.io/release/v1.34.2/bin/linux/amd64/kubectl"
+    dest: "/usr/local/bin/kubectl"
+    mode: '0755'
 
 - name: Generate the verification and execute sha256sum --check
   shell: 'echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check'

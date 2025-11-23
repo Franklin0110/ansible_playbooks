@@ -1,0 +1,12 @@
+[Machines]
+10.10.1.132
+10.10.1.75
+
+[ansible_master]
+10.10.1.132
+
+[kmaster]
+10.10.1.75 ansible_user=ansible
+
+
+[knodes]

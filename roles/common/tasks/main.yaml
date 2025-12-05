@@ -1,20 +1,34 @@
-- name: install docker
-  apt:
-    name: docker.io=28.2.2-0ubuntu1~24.04.1
-    state: present
-    update_cache: yes
+---
+- name: Replace /etc/resolv.conf with static content
+  copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver 1.1.1.1
+      nameserver 8.8.8.8
+    owner: root
+    group: root
+    mode: '0644'
 
-- name: Get the kubectl file
+- name: Download ubuntu-keyring .deb for Focal
   get_url:
-    url: "https://dl.k8s.io/release/v1.34.2/bin/linux/amd64/kubectl"
-    dest: "/usr/local/bin/kubectl"
-    mode: '0755'
+    url: "http://archive.ubuntu.com/ubuntu/pool/main/u/ubuntu-keyring/ubuntu-keyring_2020.02.11.4_all.deb"
+    dest: /tmp/ubuntu-keyring_2020.02.11.4_all.deb
+    mode: '0644'
 
-- name: Generate the verification and execute sha256sum --check
-  shell: 'echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check'
+- name: Install ubuntu-keyring via dpkg
+  command: dpkg -i /tmp/ubuntu-keyring_2020.02.11.4_all.deb
   args:
     warn: false
-  register: checksum_result
+  register: keyring_install
+  changed_when: "'installed' in keyring_install.stderr or keyring_install.rc == 0"
 
-- name: Install the package for kubelet into the shell
-  shell: 'sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl'
+- name: Fix missing dependencies
+  apt:
+    state: fixed
+  ignore_errors: yes
+
+# AFTER the keyring is fixed, then apt update will work:
+- name: Update apt cache
+  apt:
+    update_cache: yes
+

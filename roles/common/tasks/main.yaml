@@ -32,3 +32,33 @@
   apt:
     update_cache: yes
 
+- name: Configure Ubuntu 20.04 sources.list
+  apt_repository:
+    repo: 'deb http://archive.ubuntu.com/ubuntu focal {{ item }}'
+    state: present
+    update_cache: yes
+  loop:
+    - main
+    - restricted
+    - universe
+    - multiverse
+
+- name: Add security updates
+  apt_repository:
+    repo: 'deb http://security.ubuntu.com/ubuntu focal-security {{ item }}'
+    state: present
+  loop:
+    - main
+    - restricted
+    - universe
+    - multiverse
+
+- name: Add updates repository
+  apt_repository:
+    repo: 'deb http://archive.ubuntu.com/ubuntu focal-updates {{ item }}'
+    state: present
+  loop:
+    - main
+    - restricted
+    - universe
+    - multiverse   

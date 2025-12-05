@@ -7,3 +7,10 @@
   roles:
   - common
 
+- name: Get latest version of the HAproxy
+  hosts: haproxy
+  become: yes
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+  roles:
+  - haproxy

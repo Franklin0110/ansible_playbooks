@@ -10,12 +10,12 @@
 - name: Schedule local playbook to run every 10 minutes
   hosts: machines
   become: yes
-      ansible.builtin.cron:
-        name: "Auto-run NFS Ansible Playbook"
-        user: "ansible"
-        minute: "*/10"
-        job: "cd /mnt/git && ansible-playbook ./ansible_playbooks/playbooks/master_config.yaml --connection=local -i localhost, >> /var/log/ansible-deployment.log 2>&1"
-        state: present
+  ansible.builtin.cron:
+    name: "Auto-run NFS Ansible Playbook"
+    user: "ansible"
+    minute: "*/10"
+    job: "cd /mnt/git && ansible-playbook ./ansible_playbooks/playbooks/master_config.yaml --connection=local -i localhost, >> /var/log/ansible-deployment.log 2>&1"
+    state: present
 
 - name: Get latest version of the HAproxy
   hosts: haproxy

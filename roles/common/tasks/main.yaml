@@ -12,11 +12,3 @@
 - name: Update apt cache
   apt:
     update_cache: yes
-    
-- name: Schedule local playbook to run every 10 minutes
-  ansible.builtin.cron:
-    name: "Auto-run NFS Ansible Playbook"
-    user: "ansible"
-    minute: "*/10"
-    job: "cd /mnt/git/ansible_playbooks/playbooks && ANSIBLE_ROLES_PATH=/mnt/git/ansible_playbooks/roles /usr/bin/ansible-playbook -i /mnt/git/ansible_playbooks/inventory/hosts master_config.yaml, >> /var/log/ansible-deployment.log 2>&1"
-    state: present

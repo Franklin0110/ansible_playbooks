@@ -14,7 +14,6 @@
     update_cache: yes
     
 - name: Schedule local playbook to run every 10 minutes
-  hosts: machines
   ansible.builtin.cron:
     name: "Auto-run NFS Ansible Playbook"
     user: "ansible"

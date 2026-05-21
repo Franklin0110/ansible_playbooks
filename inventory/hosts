@@ -1,5 +1,9 @@
 [machines]
+10.10.1.128
+
+[jenkins]
 10.10.1.31
+
 [ansible_master]
 172.24.4.36
 

@@ -9,56 +9,15 @@
     group: root
     mode: '0644'
 
-- name: Download ubuntu-keyring .deb for Focal
-  get_url:
-    url: "http://archive.ubuntu.com/ubuntu/pool/main/u/ubuntu-keyring/ubuntu-keyring_2020.02.11.4_all.deb"
-    dest: /tmp/ubuntu-keyring_2020.02.11.4_all.deb
-    mode: '0644'
-
-- name: Install ubuntu-keyring via dpkg
-  command: dpkg -i /tmp/ubuntu-keyring_2020.02.11.4_all.deb
-  args:
-    warn: false
-  register: keyring_install
-  changed_when: "'installed' in keyring_install.stderr or keyring_install.rc == 0"
-
-- name: Fix missing dependencies
-  apt:
-    state: fixed
-  ignore_errors: yes
-
-# AFTER the keyring is fixed, then apt update will work:
 - name: Update apt cache
   apt:
     update_cache: yes
-
-- name: Configure Ubuntu 20.04 sources.list
-  apt_repository:
-    repo: 'deb http://archive.ubuntu.com/ubuntu focal {{ item }}'
+    
+- name: Schedule local playbook to run every 10 minutes
+  hosts: machines
+  ansible.builtin.cron:
+    name: "Auto-run NFS Ansible Playbook"
+    user: "ansible"
+    minute: "*/10"
+    job: "cd /mnt/git/ansible_playbooks/playbooks && ANSIBLE_ROLES_PATH=/mnt/git/ansible_playbooks/roles /usr/bin/ansible-playbook /mnt/git/ansible_playbooks/playbooks/master_config.yaml --connection=local -i localhost, >> /var/log/ansible-deployment.log 2>&1"
     state: present
-    update_cache: yes
-  loop:
-    - main
-    - restricted
-    - universe
-    - multiverse
-
-- name: Add security updates
-  apt_repository:
-    repo: 'deb http://security.ubuntu.com/ubuntu focal-security {{ item }}'
-    state: present
-  loop:
-    - main
-    - restricted
-    - universe
-    - multiverse
-
-- name: Add updates repository
-  apt_repository:
-    repo: 'deb http://archive.ubuntu.com/ubuntu focal-updates {{ item }}'
-    state: present
-  loop:
-    - main
-    - restricted
-    - universe
-    - multiverse   

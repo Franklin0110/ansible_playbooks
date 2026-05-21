@@ -18,5 +18,5 @@
     name: "Auto-run NFS Ansible Playbook"
     user: "ansible"
     minute: "*/10"
-    job: "cd /mnt/git/ansible_playbooks/playbooks && ANSIBLE_ROLES_PATH=/mnt/git/ansible_playbooks/roles /usr/bin/ansible-playbook /mnt/git/ansible_playbooks/playbooks/master_config.yaml --connection=local -i localhost, >> /var/log/ansible-deployment.log 2>&1"
+    job: "cd /mnt/git/ansible_playbooks/playbooks && ANSIBLE_ROLES_PATH=/mnt/git/ansible_playbooks/roles /usr/bin/ansible-playbook -i /mnt/git/ansible_playbooks/inventory/hosts master_config.yaml, >> /var/log/ansible-deployment.log 2>&1"
     state: present

@@ -1,0 +1,21 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: {{ control_plane_endpoint }}
+    token: {{ join_token }}
+    caCertHashes:
+      - {{ discovery_token_ca_cert_hash }}
+    unsafeSkipCAVerification: false
+  timeout: 5m0s
+nodeRegistration:
+  criSocket: unix:///var/run/cri-dockerd.sock
+  imagePullPolicy: IfNotPresent
+  name: {{ node_name }}
+  taints: null
+controlPlane:
+  localAPIEndpoint:
+    advertiseAddress: {{ ansible_default_ipv4.address }}
+    bindPort: 6443
+  certificateKey: {{ certificate_key }}

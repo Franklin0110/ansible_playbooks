@@ -1,0 +1,44 @@
+---
+# Additional Master Join Configuration
+
+# First master node details (required)
+first_master_host: ""  # IP or hostname of first master
+first_master_port: 6443
+first_master_user: "ubuntu"  # SSH user for first master
+
+# Control plane endpoint (load balancer or first master)
+# If using HA with load balancer, set this to LB address
+# If no LB, this will be set to first master IP
+control_plane_endpoint: ""  # e.g., "lb.example.com:6443" or leave empty for first master
+
+# Certificate key (will be generated on first master)
+certificate_key: ""  # Leave empty, will be fetched automatically
+
+# Join token (will be generated on first master)
+join_token: ""  # Leave empty, will be fetched automatically
+
+# Discovery token CA cert hash (will be fetched)
+discovery_token_ca_cert_hash: ""  # Leave empty, will be fetched automatically
+
+# Kubernetes version (should match first master)
+kubernetes_version: "1.28"
+kubernetes_full_version: ""
+
+# Docker version
+docker_version: "latest"
+
+# System settings
+disable_swap: true
+disable_firewalld: true
+configure_selinux: true
+
+# Docker daemon settings
+docker_log_max_size: "100m"
+docker_log_max_file: "3"
+docker_storage_driver: "overlay2"
+
+# Node configuration
+node_name: "{{ ansible_hostname }}"
+
+# Kubeconfig location
+kubeconfig_path: "/etc/kubernetes/admin.conf"

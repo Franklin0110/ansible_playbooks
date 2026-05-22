@@ -1,0 +1,131 @@
+---
+# Post-join configuration
+
+- name: Create .kube directory for root
+  file:
+    path: /root/.kube
+    state: directory
+    mode: '0755'
+
+- name: Copy admin.conf to root's kubeconfig
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /root/.kube/config
+    remote_src: yes
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Create .kube directory for ansible user
+  file:
+    path: "/home/{{ ansible_user }}/.kube"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+  when: ansible_user is defined
+
+- name: Copy admin.conf to user's kubeconfig
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    remote_src: yes
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0600'
+  when: ansible_user is defined
+
+- name: Set KUBECONFIG in bashrc for root
+  lineinfile:
+    path: /root/.bashrc
+    line: 'export KUBECONFIG=/root/.kube/config'
+    create: yes
+
+- name: Set KUBECONFIG in bashrc for user
+  lineinfile:
+    path: "/home/{{ ansible_user }}/.bashrc"
+    line: 'export KUBECONFIG=$HOME/.kube/config'
+    create: yes
+  when: ansible_user is defined
+
+- name: Add kubectl alias
+  lineinfile:
+    path: "{{ item }}"
+    line: "alias k='kubectl'"
+    create: yes
+  loop:
+    - /root/.bashrc
+    - "/home/{{ ansible_user }}/.bashrc"
+  when: ansible_user is defined
+
+- name: Wait for this node to appear in cluster
+  shell: kubectl get nodes {{ ansible_hostname }} -o name
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: node_check
+  retries: 20
+  delay: 10
+  until: node_check.rc == 0
+  changed_when: false
+
+- name: Wait for control plane pods to be ready
+  shell: |
+    export KUBECONFIG=/etc/kubernetes/admin.conf
+    kubectl get pods -n kube-system -l tier=control-plane --field-selector spec.nodeName={{ ansible_hostname }} -o json | \
+    jq -r '.items[] | select(.status.phase != "Running") | .metadata.name'
+  register: pending_pods
+  retries: 30
+  delay: 10
+  until: pending_pods.stdout == ""
+  changed_when: false
+
+- name: Get all nodes
+  command: kubectl get nodes -o wide
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: all_nodes
+  changed_when: false
+
+- name: Get control plane pods
+  command: kubectl get pods -n kube-system -l tier=control-plane
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: control_plane_pods
+  changed_when: false
+
+- name: Display cluster nodes
+  debug:
+    msg: "{{ all_nodes.stdout_lines }}"
+
+- name: Display control plane pods
+  debug:
+    msg: "{{ control_plane_pods.stdout_lines }}"
+
+- name: Copy kubeconfig to local machine
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: "/tmp/k8s-admin-{{ ansible_hostname }}.conf"
+    flat: yes
+
+- name: Display success message
+  debug:
+    msg: |
+
+      ============================================================
+      Additional Master Node Joined Successfully!
+      ============================================================
+
+      Node: {{ ansible_hostname }} ({{ ansible_default_ipv4.address }})
+      Cluster: {{ control_plane_endpoint }}
+
+      This node is now part of the control plane.
+
+      Kubeconfig copied to: /tmp/k8s-admin-{{ ansible_hostname }}.conf
+
+      Verify from any master node:
+      kubectl get nodes
+      kubectl get pods -n kube-system -o wide
+
+      Your cluster now has multiple control plane nodes for HA!
+
+      ============================================================

@@ -1,0 +1,21 @@
+---
+- name: Validate required variables
+  include_tasks: validate.yml
+
+- name: Include prerequisite tasks
+  include_tasks: prerequisites.yml
+
+- name: Include Docker installation tasks
+  include_tasks: install-docker.yml
+
+- name: Include Kubernetes installation tasks
+  include_tasks: install-kubernetes.yml
+
+- name: Fetch join information from first master
+  include_tasks: fetch-join-info.yml
+
+- name: Join cluster as control plane
+  include_tasks: join-cluster.yml
+
+- name: Post-join configuration
+  include_tasks: post-join.yml

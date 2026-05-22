@@ -1,0 +1,19 @@
+---
+# Validate required variables
+
+- name: Check if first_master_host is defined
+  fail:
+    msg: "first_master_host must be defined in defaults/main.yml or inventory"
+  when: first_master_host == "" or first_master_host is not defined
+
+- name: Set control_plane_endpoint to first master if not defined
+  set_fact:
+    control_plane_endpoint: "{{ first_master_host }}:{{ first_master_port }}"
+  when: control_plane_endpoint == "" or control_plane_endpoint is not defined
+
+- name: Display configuration
+  debug:
+    msg:
+      - "First master: {{ first_master_host }}"
+      - "Control plane endpoint: {{ control_plane_endpoint }}"
+      - "This node: {{ ansible_hostname }} ({{ ansible_default_ipv4.address }})"

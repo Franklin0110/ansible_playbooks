@@ -1,0 +1,47 @@
+---
+# Join this node as an additional control plane
+
+- name: Check if already joined to cluster
+  stat:
+    path: /etc/kubernetes/admin.conf
+  register: already_joined
+
+- name: Generate kubeadm join config
+  template:
+    src: kubeadm-join-config.yaml.j2
+    dest: /tmp/kubeadm-join-config.yaml
+    mode: '0600'
+  when: not already_joined.stat.exists
+
+- name: Join cluster as control plane node
+  command: >
+    kubeadm join {{ control_plane_endpoint }}
+    --config /tmp/kubeadm-join-config.yaml
+    --v=5
+  register: kubeadm_join_output
+  when: not already_joined.stat.exists
+
+- name: Save join output
+  copy:
+    content: "{{ kubeadm_join_output.stdout }}"
+    dest: /tmp/kubeadm-join-output.log
+    mode: '0600'
+  when: kubeadm_join_output.changed
+
+- name: Display join result
+  debug:
+    msg: "{{ kubeadm_join_output.stdout_lines }}"
+  when: kubeadm_join_output.changed
+
+- name: Wait for kubelet to start
+  systemd:
+    name: kubelet
+    state: started
+  register: kubelet_status
+
+- name: Wait for local API server to be ready
+  wait_for:
+    host: 127.0.0.1
+    port: 6443
+    timeout: 300
+  when: kubeadm_join_output.changed

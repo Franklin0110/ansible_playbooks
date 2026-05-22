@@ -106,14 +106,3 @@
     - /root/.bashrc
     - "/home/{{ ansible_user }}/.bashrc"
   when: ansible_user is defined
-
-- name: Wait for all control plane pods to be ready
-  shell: |
-    export KUBECONFIG=/etc/kubernetes/admin.conf
-    kubectl get pods -n kube-system -o json | \
-    jq -r '.items[] | select(.status.phase != "Running" and .status.phase != "Succeeded") | .metadata.name'
-  register: pending_pods
-  retries: 30
-  delay: 10
-  until: pending_pods.stdout == ""
-  changed_when: false

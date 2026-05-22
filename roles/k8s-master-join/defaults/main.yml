@@ -9,7 +9,7 @@ first_master_user: "root"  # SSH user for first master
 # Control plane endpoint (load balancer or first master)
 # If using HA with load balancer, set this to LB address
 # If no LB, this will be set to first master IP
-control_plane_endpoint: ""  # e.g., "lb.example.com:6443" or leave empty for first master
+control_plane_endpoint: "10.10.1.8:6443"  # e.g., "lb.example.com:6443" or leave empty for first master
 
 # Certificate key (will be generated on first master)
 certificate_key: ""  # Leave empty, will be fetched automatically

@@ -1,0 +1,58 @@
+---
+# Kubernetes with Docker Configuration
+
+# Kubernetes version
+kubernetes_version: "1.28"  # Options: 1.28, 1.29, 1.30
+kubernetes_full_version: ""  # Leave empty for latest patch, or specify like "1.28.0-00"
+
+# Docker version
+docker_version: "latest"  # Or specify like "5:24.0.0-1~ubuntu.22.04~jammy"
+
+# Pod network CIDR
+pod_network_cidr: "10.244.0.0/16"
+
+# Service CIDR
+service_cidr: "10.96.0.0/12"
+
+# API server advertise address (leave empty for auto-detect)
+apiserver_advertise_address: ""
+
+# API server port
+apiserver_port: 6443
+
+# CNI plugin to install
+cni_plugin: "calico"  # Options: calico, flannel, weave, canal
+
+# Calico version (if using calico)
+calico_version: "v3.27.0"
+
+# Control plane endpoint (for HA, leave empty for single master)
+control_plane_endpoint: ""
+
+# System settings
+disable_swap: true
+disable_firewalld: true
+configure_selinux: true
+
+# Docker daemon settings
+docker_log_max_size: "100m"
+docker_log_max_file: "3"
+docker_storage_driver: "overlay2"
+
+# Node configuration
+node_name: "{{ ansible_hostname }}"
+
+# Additional API server arguments
+kube_apiserver_extra_args: {}
+# Example:
+#   service-node-port-range: "30000-32767"
+
+# Additional controller manager arguments
+kube_controller_manager_extra_args: {}
+
+# Additional scheduler arguments
+kube_scheduler_extra_args: {}
+
+# Kubeconfig location
+kubeconfig_path: "/etc/kubernetes/admin.conf"
+user_kubeconfig_path: "$HOME/.kube/config"

@@ -59,9 +59,7 @@
       kubectl get nodes
       kubectl get pods -A
 
-      Or SSH to master:
-      ssh {{ ansible_user }}@{{ ansible_host }}
-      kubectl get nodes
+      Or SSH to master:      kubectl get nodes
 
       Docker commands:
       docker ps

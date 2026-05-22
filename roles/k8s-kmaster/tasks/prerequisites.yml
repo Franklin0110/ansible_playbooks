@@ -61,15 +61,6 @@
     - ansible_os_family == "Debian"
   ignore_errors: yes
 
-- name: Configure SELinux to permissive (RHEL/CentOS)
-  selinux:
-    policy: targeted
-    state: permissive
-  when:
-    - configure_selinux | bool
-    - ansible_os_family == "RedHat"
-  ignore_errors: yes
-
 - name: Load required kernel modules
   modprobe:
     name: "{{ item }}"

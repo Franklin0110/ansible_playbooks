@@ -1,0 +1,77 @@
+---
+# Post-installation tasks
+
+- name: Get cluster information
+  command: kubectl cluster-info
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: cluster_info
+  changed_when: false
+
+- name: Get all pods status
+  command: kubectl get pods -A
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: all_pods
+  changed_when: false
+
+- name: Get nodes with details
+  command: kubectl get nodes -o wide
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: nodes_detailed
+  changed_when: false
+
+- name: Display cluster information
+  debug:
+    msg: "{{ cluster_info.stdout_lines }}"
+
+- name: Display nodes
+  debug:
+    msg: "{{ nodes_detailed.stdout_lines }}"
+
+- name: Display all pods
+  debug:
+    msg: "{{ all_pods.stdout_lines }}"
+
+- name: Create completion for kubectl (bash)
+  shell: kubectl completion bash > /etc/bash_completion.d/kubectl
+  args:
+    creates: /etc/bash_completion.d/kubectl
+
+- name: Display final instructions
+  debug:
+    msg: |
+
+      ============================================================
+      Kubernetes Master Node Setup Complete!
+      ============================================================
+
+      Cluster Details:
+      - API Server: https://{{ ansible_default_ipv4.address }}:{{ apiserver_port }}
+      - Container Runtime: Docker (via cri-dockerd)
+      - CNI Plugin: {{ cni_plugin }}
+      - Pod Network CIDR: {{ pod_network_cidr }}
+      - Kubeconfig (local): /tmp/k8s-admin.conf
+
+      Access the cluster locally:
+      export KUBECONFIG=/tmp/k8s-admin.conf
+      kubectl get nodes
+      kubectl get pods -A
+
+      Or SSH to master:
+      ssh {{ ansible_user }}@{{ ansible_host }}
+      kubectl get nodes
+
+      Docker commands:
+      docker ps
+      docker images
+      docker logs <container-id>
+
+      Worker join command saved to:
+      /tmp/k8s-join-command.sh
+
+      To add worker nodes, run on each worker:
+      $(cat /tmp/k8s-join-command.sh)
+
+      ============================================================

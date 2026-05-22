@@ -1,0 +1,18 @@
+---
+- name: Include prerequisite tasks
+  include_tasks: prerequisites.yml
+
+- name: Include Docker installation tasks
+  include_tasks: install-docker.yml
+
+- name: Include Kubernetes installation tasks
+  include_tasks: install-kubernetes.yml
+
+- name: Include cluster initialization tasks
+  include_tasks: initialize-cluster.yml
+
+- name: Include CNI installation tasks
+  include_tasks: install-cni.yml
+
+- name: Include post-installation tasks
+  include_tasks: post-install.yml

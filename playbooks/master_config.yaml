@@ -7,6 +7,14 @@
   roles:
   - common
 
+- name: kmaster_machine_deployment
+  hosts: kmasters
+  become: yes
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+  roles:
+  - k8s-kmaster
+  
 - name: Automate the ansible run in the jenkins hosts.
   hosts: jenkins
   become: yes

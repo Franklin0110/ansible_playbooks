@@ -62,7 +62,7 @@
   ignore_errors: yes
 
 - name: Configure sysctl parameters for Kubernetes
-  sysctl:
+  ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     state: present
@@ -78,5 +78,5 @@
     - { name: 'kernel.panic_on_oops', value: '1' }
 
 - name: Apply sysctl settings
-  command: sysctl --system
+  ansible.builtin.command: sysctl --system
   changed_when: false

@@ -2,7 +2,7 @@
 # Additional Master Join Configuration
 
 # First master node details (required)
-first_master_host: "10.10.1.8"  # IP or hostname of first master
+first_master_host: "{{ hostvars['kmaster01']['ansible_host'] }}"  # IP or hostname of first master
 first_master_port: 6443
 first_master_user: "root"  # SSH user for first master
 

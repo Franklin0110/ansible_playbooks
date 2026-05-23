@@ -135,4 +135,4 @@ while true; do
 done
 
 cd ~/ansible_playbooks/inventory
-sed -i "/^\[stagging\]/a $IP" hosts
+sed -i "/^\[stagging\]/a $HOSTNAME $IP" hosts

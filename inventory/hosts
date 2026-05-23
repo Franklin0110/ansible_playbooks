@@ -4,7 +4,7 @@
 jenkins01 ansible_host=10.10.1.31
 
 [kmasters]
-kmaster02 10.10.1.119
+kmaster02 ansible_host=10.10.1.119
 
 [kmasters_init]
 kmaster01 ansible_host=10.10.1.147

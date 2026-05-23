@@ -12,11 +12,11 @@ kmaster01 ansible_host=10.10.1.147
 
 [knodes]
 knode01 ansible_host=10.10.1.134
+knode02 ansible_host=10.10.1.33
 
 [haproxy]
 
 [stagging]
-knode02 ansible_host=10.10.1.33
 
 
 

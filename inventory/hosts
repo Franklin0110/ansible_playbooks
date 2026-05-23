@@ -14,5 +14,6 @@ kmaster01 ansible_host=10.10.1.147
 [haproxy]
 
 [stagging]
+kmaster02 10.10.1.119
 
 

@@ -1,0 +1,5 @@
+---
+- name: Join Cluster
+  host: kmasters
+  include_role:
+    name: k8s-master-join

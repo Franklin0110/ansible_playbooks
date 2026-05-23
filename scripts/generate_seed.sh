@@ -136,3 +136,6 @@ done
 
 cd ~/ansible_playbooks/inventory
 sed -i "/^\[stagging\]/a $HOSTNAME $IP" hosts
+git add hosts 
+git commit -m "Adding new host into inventory files"
+git push origin main

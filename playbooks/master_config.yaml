@@ -8,20 +8,14 @@
   - common
 
 - name: kmaster_machine_deployment
-  hosts: main_kmasters
-  become: yes
-  vars:
-    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
-  roles:
-  - k8s-kmaster
+    hosts: kmasters
+    become: yes
+    roles:
+      - role: k8s-kmaster
+        tags: ['kmaster', 'init']
 
-- name: Add second and third node to the system. 
-  hosts: kmasters
-  become: yes
-  vars:
-    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
-  roles:
-  - k8s-master-join
+      - role: k8s-master-join
+        tags: ['join', 'add-master']
   
 - name: Automate the ansible run in the jenkins hosts.
   hosts: jenkins

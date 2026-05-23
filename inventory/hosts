@@ -1,22 +1,17 @@
 [machines]
-kmaster03 ansible_host=10.10.1.237
-kmaster02 ansible_host=10.10.1.233
 
 [jenkins]
-jenkins01 ansibl_=host=10.10.1.31
+jenkins01 ansible_hosst=10.10.1.31
 
 [kmasters]
-kmaster03 ansible_host=10.10.1.237
-kmaster02 ansible_host=10.10.1.233
 
 [main_kmasters]
-kmaster01 ansible_host=10.10.1.219
+kmaster01 10.10.1.147
 
 [knodes]
 
 [haproxy]
 
 [stagging]
-kmaster01 10.10.1.147
 
 

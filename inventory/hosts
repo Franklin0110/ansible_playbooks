@@ -5,6 +5,7 @@ jenkins01 ansible_host=10.10.1.31
 
 [kmasters]
 kmaster02 ansible_host=10.10.1.119
+kmaster03 ansible_host=10.10.1.57
 
 [kmasters_init]
 kmaster01 ansible_host=10.10.1.147
@@ -14,6 +15,6 @@ kmaster01 ansible_host=10.10.1.147
 [haproxy]
 
 [stagging]
-kmaster03 ansible_host=10.10.1.57
+
 
 

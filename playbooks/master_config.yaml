@@ -8,14 +8,14 @@
   - common
 
 - name: kmaster_machine_deployment
-    hosts: kmasters
-    become: yes
-    roles:
-      - role: k8s-kmaster
-        tags: ['kmaster', 'init']
+  hosts: kmasters
+  become: yes
+  roles:
+    - role: k8s-kmaster
+      tags: ['kmaster', 'init']
 
-      - role: k8s-master-join
-        tags: ['join', 'add-master']
+    - role: k8s-master-join
+      tags: ['join', 'add-master']
   
 - name: Automate the ansible run in the jenkins hosts.
   hosts: jenkins

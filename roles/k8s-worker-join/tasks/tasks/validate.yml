@@ -1,0 +1,14 @@
+---
+# Validate required variables
+
+- name: Check if master_host is defined
+  fail:
+    msg: "master_host must be defined in defaults/main.yml or inventory"
+  when: master_host == "" or master_host is not defined
+
+- name: Display configuration
+  debug:
+    msg:
+      - "Master node: {{ master_host }}"
+      - "This worker: {{ ansible_hostname }} ({{ ansible_default_ipv4.address }})"
+      - "Kubernetes version: {{ kubernetes_version }}"

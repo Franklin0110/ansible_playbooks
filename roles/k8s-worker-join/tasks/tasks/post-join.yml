@@ -1,0 +1,47 @@
+---
+# Post-join verification
+
+- name: Wait for this node to appear in cluster
+  shell: kubectl get nodes {{ ansible_hostname }} -o name
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: node_check
+  delegate_to: "{{ master_host }}"
+  become: yes
+  retries: 20
+  delay: 10
+  until: node_check.rc == 0
+  changed_when: false
+
+- name: Get node status
+  shell: kubectl get node {{ ansible_hostname }} -o wide
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: node_status
+  delegate_to: "{{ master_host }}"
+  become: yes
+  changed_when: false
+
+- name: Display node status
+  debug:
+    msg: "{{ node_status.stdout_lines }}"
+
+- name: Display success message
+  debug:
+    msg: |
+
+      ============================================================
+      Worker Node Joined Successfully!
+      ============================================================
+
+      Node: {{ ansible_hostname }} ({{ ansible_default_ipv4.address }})
+      Cluster: {{ master_host }}:{{ master_port }}
+      Container Runtime: Docker (via cri-dockerd)
+
+      This node is now a worker in the cluster.
+
+      Verify from master node:
+      kubectl get nodes
+      kubectl get pods -A -o wide
+
+      ============================================================

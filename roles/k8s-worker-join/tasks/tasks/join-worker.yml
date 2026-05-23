@@ -1,0 +1,35 @@
+---
+# Join this node as a worker
+
+- name: Check if already joined to cluster
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: already_joined
+
+- name: Join cluster as worker node
+  command: >
+    kubeadm join {{ master_host }}:{{ master_port }}
+    --token {{ join_token }}
+    --discovery-token-ca-cert-hash {{ discovery_token_ca_cert_hash }}
+    --cri-socket unix:///var/run/cri-dockerd.sock
+    --v=5
+  register: kubeadm_join_output
+  when: not already_joined.stat.exists
+
+- name: Save join output
+  copy:
+    content: "{{ kubeadm_join_output.stdout }}"
+    dest: /tmp/kubeadm-join-worker-output.log
+    mode: '0600'
+  when: kubeadm_join_output.changed
+
+- name: Display join result
+  debug:
+    msg: "{{ kubeadm_join_output.stdout_lines }}"
+  when: kubeadm_join_output.changed
+
+- name: Wait for kubelet to start
+  systemd:
+    name: kubelet
+    state: started
+  register: kubelet_status

@@ -104,6 +104,10 @@ else
     exit 1
 fi
 
+
+qemu-img resize $OS_DISK 30G
+echo "Machine sized to 30GB"
+
 echo "Done! The node is ready to be booted."
 
 virt-install \

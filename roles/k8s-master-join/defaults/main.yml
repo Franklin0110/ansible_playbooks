@@ -9,7 +9,7 @@ first_master_user: "root"  # SSH user for first master
 # Control plane endpoint (load balancer or first master)
 # If using HA with load balancer, set this to LB address
 # If no LB, this will be set to first master IP
-control_plane_endpoint: "{{ hostvars['kmaster01']['ansible_host'] }}"
+control_plane_endpoint: "{{ hostvars['kmaster01']['ansible_host'] }}:6443"
 
 # Certificate key (will be generated on first master)
 certificate_key: ""  # Leave empty, will be fetched automatically

@@ -16,6 +16,7 @@ knode01 ansible_host=10.10.1.134
 [haproxy]
 
 [stagging]
+knode02 ansible_host=10.10.1.33
 
 
 

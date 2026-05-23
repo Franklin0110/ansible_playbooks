@@ -2,4 +2,4 @@
 - name: Join Cluster
   hosts: kmasters
   roles:
-    name: k8s-master-join
+    - k8s-master-join

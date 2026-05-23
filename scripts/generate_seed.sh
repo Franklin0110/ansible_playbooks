@@ -139,6 +139,7 @@ while true; do
 done
 
 cd ~/ansible_playbooks/inventory
+git pull --rebase
 sed -i "/^\[stagging\]/a $HOSTNAME $IP" hosts
 git add hosts 
 git commit -m "Adding new host into inventory files"

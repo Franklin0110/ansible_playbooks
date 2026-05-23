@@ -105,3 +105,34 @@ else
 fi
 
 echo "Done! The node is ready to be booted."
+
+virt-install \
+--name $1 \
+--ram 2048 \
+--vcpus 2 \
+--disk path=$OS_DISK,bus=virtio \
+--disk path=$SEED_IMG,device=cdrom \
+--os-variant ubuntu24.04 \
+--network bridge=br0 \
+--graphics none \
+--import \
+--noautoconsole
+
+echo "Waiting for $HOSTNAME to boot and qemu-guest-agent to report the IP..."
+
+# Loop until the qemu-guest-agent returns a valid, non-loopback IPv4 address
+while true; do
+    # --source agent forces libvirt to query the guest OS directly
+    IP=$(virsh domifaddr "$HOSTNAME" --source agent 2>/dev/null | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | grep -v "127.0.0.1" | head -n 1)
+    
+    if [ -n "$IP" ]; then
+        echo -e "\nSuccess! $HOSTNAME is up with IP: $IP"
+        break
+    fi
+    
+    echo -n "."
+    sleep 3
+done
+
+cd ~/ansible_playbooks/inventory
+sed -i "/^\[stagging\]/a $IP" hosts

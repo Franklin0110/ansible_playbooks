@@ -8,26 +8,37 @@ if [ -z "$1" ]; then
 fi
 
 HOSTNAME=$1
+BASE_IMAGE="/kvm/machines/images/ubuntu24_Base.qcow2"
 
-# Determine the target directory based on the hostname prefix
+# Verify the base image exists
+if [ ! -f "$BASE_IMAGE" ]; then
+    echo "Error: Base image not found at $BASE_IMAGE"
+    exit 1
+fi
+
+# Determine target directories based on the hostname prefix
 if [[ "$HOSTNAME" == kmaster* ]]; then
-    DEST_DIR="/kvm/machines/userdata/kmasters"
+    CLOUD_DIR="/kvm/machines/userdata/kmasters"
+    DISK_DIR="/kvm/machines/images/kmasters"
 elif [[ "$HOSTNAME" == knode* ]]; then
-    DEST_DIR="/kvm/machines/userdata/knodes"
+    CLOUD_DIR="/kvm/machines/userdata/knodes"
+    DISK_DIR="/kvm/machines/images/knodes"
 else
     echo "Error: Hostname must start with 'kmaster' or 'knode'"
     exit 1
 fi
 
-# Ensure the target directory exists
-mkdir -p "$DEST_DIR"
+# Ensure target directories exist
+mkdir -p "$CLOUD_DIR"
+mkdir -p "$DISK_DIR"
 
-YAML_FILE="$DEST_DIR/${HOSTNAME}.yaml"
-IMG_FILE="$DEST_DIR/${HOSTNAME}.img"
+YAML_FILE="$CLOUD_DIR/${HOSTNAME}.yaml"
+SEED_IMG="$CLOUD_DIR/${HOSTNAME}.img"
+OS_DISK="$DISK_DIR/${HOSTNAME}.qcow2"
 
-echo "Generating cloud-init data for $HOSTNAME in $DEST_DIR..."
+echo "Generating configs and disks for $HOSTNAME..."
 
-# Create the YAML file and inject the hostname
+# 1. Create the YAML file and inject the hostname
 cat << EOF > "$YAML_FILE"
 #cloud-config
 hostname: ${HOSTNAME}
@@ -68,18 +79,29 @@ runcmd:
   - ufw --force enable
 EOF
 
-# Verify cloud-localds is installed
+# 2. Verify and run cloud-localds for the seed image
 if ! command -v cloud-localds &> /dev/null; then
     echo "Error: cloud-localds is not installed. Install 'cloud-image-utils' first."
     exit 1
 fi
 
-# Generate the seed image
-cloud-localds "$IMG_FILE" "$YAML_FILE"
-
+cloud-localds "$SEED_IMG" "$YAML_FILE"
 if [ $? -eq 0 ]; then
-    echo "Success! Image generated at: $IMG_FILE"
+    echo " -> Cloud-init seed generated: $SEED_IMG"
 else
-    echo "Error: Failed to generate the image."
+    echo "Error: Failed to generate cloud-init seed."
     exit 1
 fi
+
+# 3. Create the OS disk (Full Clone)
+echo " -> Copying base image to create full clone. This may take a moment depending on the image size..."
+cp "$BASE_IMAGE" "$OS_DISK"
+
+if [ $? -eq 0 ]; then
+    echo " -> OS disk full clone created: $OS_DISK"
+else
+    echo "Error: Failed to copy base image."
+    exit 1
+fi
+
+echo "Done! The node is ready to be booted."

@@ -6,20 +6,6 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
   roles:
   - common
-
-- name: Init Cluster
-  hosts: kmasters
-  include_role:
-    name: k8s-kmaster
-  when: run_mode == 'init'
-  tags: ['kmaster', 'init']
-
-- name: Join Cluster
-  host: kmasters
-  include_role:
-    name: k8s-master-join
-  when: run_mode == 'join'
-  tags: ['join', 'add-master']
   
 - name: Automate the ansible run in the jenkins hosts.
   hosts: jenkins

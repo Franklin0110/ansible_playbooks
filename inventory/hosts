@@ -4,6 +4,9 @@
 jenkins01 ansible_host=10.10.1.31
 
 [kmasters]
+
+
+[kmasters_init]
 kmaster01 ansible_host=10.10.1.147
 
 [knodes]

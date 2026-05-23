@@ -27,8 +27,6 @@ cni_plugin: "calico"  # Options: calico, flannel, weave, canal
 calico_version: "v3.27.0"
 
 # Control plane endpoint (for HA, leave empty for single master)
-control_plane_endpoint: ""
-
 # System settings
 disable_swap: true
 disable_firewalld: true

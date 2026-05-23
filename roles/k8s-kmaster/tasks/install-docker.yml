@@ -77,8 +77,8 @@
           },
           "storage-driver": "overlay2"
         }
-    mode: '0644'
-  notify: restart docker
+      mode: '0644'
+    notify: restart docker
 
 - name: Create systemd directory for Docker
   file:

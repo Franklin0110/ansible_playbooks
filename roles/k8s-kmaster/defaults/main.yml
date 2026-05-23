@@ -4,7 +4,7 @@
 # Kubernetes version
 kubernetes_version: "1.28"  # Options: 1.28, 1.29, 1.30
 kubernetes_full_version: ""  # Leave empty for latest patch, or specify like "1.28.0-00"
-control_plane_endpoint: "10.10.1.8:6443"
+control_plane_endpoint: "{{ hostvars['kmaster01']['ansible_host'] }}"
 # Docker version
 docker_version: "latest"  # Or specify like "5:24.0.0-1~ubuntu.22.04~jammy"
 

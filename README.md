@@ -27,6 +27,7 @@ We have sucessfully until now.
 3. We have created a script to create a machine with all the required information just by running the script with the hostname that you want, for example. 
 
 bash root@kvm01:~/ansible_playbooks/scripts# bash generate_seed.sh kmaster02
+NOTE: Everytime you create a machine, the KVM will write it into the [Stagging] part in the inventory file, you must move it as you wish. 
 
 This will create the machine with all the required stuff fors us to run the playbooks, we just need to put the IPs in the right zone in the inventory files. 
 

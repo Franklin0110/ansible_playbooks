@@ -12,7 +12,6 @@ The cluster is composed by the next.
 4. As Many knodes as you wish.
 NOTE: All of them need to be accesible through the ansible machine.
 
-We have sucessfully until now.
 
 From the Ansible machine you can copy this repository without problems, and then run the next. 
 
@@ -22,6 +21,6 @@ This will do all for you, as long as you configure 2 things correctly.
 1. The inventory of the Main Kmaster Machine.
 2. Configure control_plane_endpoint: with the right IP. (We must automate this in the future in some way)
 
-
+We have sucessfully until now.
 1. Created a Role that creates a Kubernetes cluster from scratch.
 2. Created a Role that configures New kmasters and add thems into the created cluster (Configuration files might be needed for this one)

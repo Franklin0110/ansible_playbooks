@@ -1,0 +1,31 @@
+---
+# Worker Node Join Configuration
+
+# Master node details (required)
+master_host: ""  # IP of master node
+master_user: "ansible"  # SSH user for master
+master_port: 6443
+
+# Kubernetes version (should match master)
+kubernetes_version: "1.28"
+kubernetes_full_version: ""
+
+# Docker version
+docker_version: "latest"
+
+# System settings
+disable_swap: true
+disable_firewalld: true
+configure_selinux: true
+
+# Docker daemon settings
+docker_log_max_size: "100m"
+docker_log_max_file: "3"
+docker_storage_driver: "overlay2"
+
+# Node configuration
+node_name: "{{ ansible_hostname }}"
+
+# Join token (will be fetched from master automatically)
+join_token: ""
+discovery_token_ca_cert_hash: ""

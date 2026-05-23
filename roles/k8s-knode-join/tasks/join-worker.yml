@@ -16,6 +16,12 @@
   register: kubeadm_join_output
   when: not already_joined.stat.exists
 
+name: Label node as worker (Run on Master)
+command: "kubectl label node {{ inventory_hostname }} node-role.kubernetes.io/worker= --overwrite"
+delegate_to: "{{ groups['masters'][0] }}" # Targets your first master node
+run_once: true # Ensures this only runs once per node join
+when: kubeadm_join_output is changed
+
 - name: Save join output
   copy:
     content: "{{ kubeadm_join_output.stdout }}"

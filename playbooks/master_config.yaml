@@ -13,7 +13,6 @@
   roles:
     - role: k8s-kmaster
       tags: ['kmaster', 'init']
-
     - role: k8s-master-join
       tags: ['join', 'add-master']
   

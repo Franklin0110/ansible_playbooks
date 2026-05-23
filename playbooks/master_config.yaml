@@ -7,14 +7,19 @@
   roles:
   - common
 
-- name: kmaster_machine_deployment
+- name: Init Cluster
   hosts: kmasters
-  become: yes
-  roles:
-    - role: k8s-kmaster
-      tags: ['kmaster', 'init']
-    - role: k8s-master-join
-      tags: ['join', 'add-master']
+  include_role:
+    name: k8s-kmaster
+  when: run_mode == 'init'
+  tags: ['kmaster', 'init']
+
+- name: Join Cluster
+  host: kmasters
+  include_role:
+    name: k8s-master-join
+  when: run_mode == 'join'
+  tags: ['join', 'add-master']
   
 - name: Automate the ansible run in the jenkins hosts.
   hosts: jenkins

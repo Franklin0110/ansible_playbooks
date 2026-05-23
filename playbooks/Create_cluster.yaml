@@ -1,0 +1,5 @@
+---
+- name: Init Cluster
+  hosts: kmasters_init
+  include_role:
+    name: k8s-kmaster

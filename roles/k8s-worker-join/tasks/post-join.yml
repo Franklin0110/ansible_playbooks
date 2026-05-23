@@ -33,13 +33,8 @@
       ============================================================
       Worker Node Joined Successfully!
       ============================================================
-
-      Node: {{ ansible_hostname }} ({{ ansible_default_ipv4.address }})
-      Cluster: {{ master_host }}:{{ master_port }}
       Container Runtime: Docker (via cri-dockerd)
-
       This node is now a worker in the cluster.
-
       Verify from master node:
       kubectl get nodes
       kubectl get pods -A -o wide

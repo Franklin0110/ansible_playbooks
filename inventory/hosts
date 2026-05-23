@@ -19,3 +19,5 @@
 
 [haproxy]
 10.10.1.78
+
+[stagging]

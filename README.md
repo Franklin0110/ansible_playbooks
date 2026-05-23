@@ -2,7 +2,8 @@
 This is going to have all the ansible playbooks to practice. 
 As requirements for the roles to work.
 
-First we will need a Main machine or ansible machine which is going to run all the playbooks, I personally recommend using U.24.04 for this kind of project. 
+First we will need a Main machine or ansible machine which is going to run all the playbooks, I personally recommend using U.24.04 for this kind of project for all machines. 
+Remember to install all ansible packages before moving to the next steps. 
 
 The cluster is composed by the next. 
 1. One Ansible Machine with ssh access to all other machines. 

@@ -16,11 +16,10 @@
   register: kubeadm_join_output
   when: not already_joined.stat.exists
 
-- name: Label node as worker (Run on Master)  # <--- Added the dash here
-  command: "kubectl label node {{ inventory_hostname }} node-role.kubernetes.io/worker= --overwrite"
+- name: Label node as worker (Run on Master)
   delegate_to: "{{ groups['masters'][0] }}"
-  run_once: true
-  when: kubeadm_join_output is changed
+  when: kubeadm_join_output is changed # This now checks the variable for the current host being processed
+  command: "kubectl label node {{ inventory_hostname }} node-role.kubernetes.io/worker= --overwrite"
 
 - name: Save join output
   copy:

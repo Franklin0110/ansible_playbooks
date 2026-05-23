@@ -2,7 +2,7 @@
 # Worker Node Join Configuration
 
 # Master node details (required)
-master_host: ""  # IP of master node
+master_host: "{{ hostvars['kmaster01']['ansible_host'] }}"  # IP of master node
 master_user: "ansible"  # SSH user for master
 master_port: 6443
 

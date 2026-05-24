@@ -18,6 +18,7 @@ knode03 ansible_host=10.10.1.158
 [haproxy]
 
 [stagging]
+openvpn ansible_host=10.10.1.183
 
 
 

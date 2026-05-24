@@ -24,8 +24,8 @@ elif [[ "$HOSTNAME" == knode* ]]; then
     CLOUD_DIR="/kvm/machines/userdata/knodes"
     DISK_DIR="/kvm/machines/images/knodes"
 else
-    echo "Error: Hostname must start with 'kmaster' or 'knode'"
-    exit 1
+    CLOUD_DIR="/kvm/machines/userdata/others"
+    DISK_DIR="/kvm/machines/images/others"
 fi
 
 # Ensure target directories exist

@@ -1,0 +1,12 @@
+---
+- name: Download the tar file with latest version
+  command: wget https://swupdate.openvpn.org/community/releases/openvpn-2.7.4.tar.gz
+  changed_when: false
+
+- name : Build the OpenVPN package to install
+  command: rpmbuild -tb openvpn-2.7.4.tar.gz
+
+- name: Install the OpenVPN builded package
+  command: rpm -ivh openvpn-2.7.4.rpm
+
+

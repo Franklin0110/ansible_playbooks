@@ -31,22 +31,22 @@ This repository automates the heavy lifting of Kubernetes administration and com
 
 ### 1. Provision a New Machine (Optional)
 If you need to spin up a new node, use the included Bash script on your KVM host. For example, to create a new master node:
-
+```bash
 bash ~/ansible_playbooks/scripts/create_machine.sh kmaster02
+```
 
 Note: Every time you create a machine using this script, its IP/Hostname is automatically appended to the [staging] group in your Ansible inventory file. You must manually move it to the correct group (e.g., [kmasters] or [knodes]) before running the playbooks.
 
-2. Configure Your Environment
+## 2. Configure Your Environment
 Before running the playbooks, ensure you configure two crucial items:
 
 Inventory File: Update inventory/hosts with the correct IP addresses for your masters and workers.
 
 SSH Access: Ensure your Ansible machine can communicate with the newly provisioned IPs.
 
-3. Run the Playbooks
+## 3. Run the Playbooks
 We have modular playbooks depending on your goal. To execute the primary configuration, simply run:
 
-```bash
 ansible-playbook ./playbooks/master_config.yaml
 
 Available Playbooks:
@@ -63,15 +63,15 @@ With HA, monitoring, and routing already implemented, here are the best practice
 ## 1. External Load Balancing (HAProxy)
 Since you have HAProxy roles in your repository, ensure it is configured as an external load balancer sitting in front of your kmasters (targeting port 6443). All your worker nodes and external clients (including your Ansible automation) should communicate with the HAProxy virtual IP, rather than pointing to kmaster01. This guarantees true high availability if a master goes down.
 
-2. Security & Secrets Management
+## 2. Security & Secrets Management
 Use Ansible Vault: Do not store sensitive data (like OpenVPN certificates, ArgoCD admin passwords, or Join Tokens) in plain text. Use ansible-vault to encrypt these variables in your repository.
 
 Secure Ingress with Cert-Manager: You have cert-manager integrated. Ensure you configure ClusterIssuers (like Let's Encrypt or a local CA) to automatically provision TLS certificates for your public-facing ArgoCD dashboards and application ingresses.
 
-3. GitOps Secrets Workflow
+## 3. GitOps Secrets Workflow
 Separate Secrets from Git: ArgoCD syncs everything from Git, but you should never push Kubernetes Secret manifests to your repository. Implement a tool like External Secrets Operator or Sealed Secrets so ArgoCD can safely deploy encrypted secrets to your cluster.
 
-4. Alerting & Backups
+## 4. Alerting & Backups
 Configure Prometheus Alertmanager: You have the metrics visualized in Grafana. The next step is to configure Alertmanager to ping you (via Slack, Email, or Webhook) if a knode goes offline or if CPU usage spikes dangerously high.
 
 Automate etcd Backups: Add a simple cronjob or an additional Ansible playbook that takes periodic snapshots of the etcd database and saves them to an external location (like an S3 bucket or external NAS). If your cluster suffers a catastrophic failure, this is the only way to restore it.

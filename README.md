@@ -32,7 +32,6 @@ This repository automates the heavy lifting of Kubernetes administration and com
 ### 1. Provision a New Machine (Optional)
 If you need to spin up a new node, use the included Bash script on your KVM host. For example, to create a new master node:
 
-```bash
 bash ~/ansible_playbooks/scripts/create_machine.sh kmaster02
 
 Note: Every time you create a machine using this script, its IP/Hostname is automatically appended to the [staging] group in your Ansible inventory file. You must manually move it to the correct group (e.g., [kmasters] or [knodes]) before running the playbooks.

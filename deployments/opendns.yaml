@@ -16,11 +16,8 @@ data:
             lameduck 5s
         }
         ready
-        # This plugin serves standard kubernetes routing if you link it
-        # Otherwise, forward all public queries to upstream DNS (e.g., Google/Cloudflare)
-        forward . 1.1.1.1 8.8.8.8 {
-            max_concurrent 1000
-        }
+        
+        # 1. Evaluate your local network mappings first
         hosts {
             10.99.72.169 argocd.uro.net
             10.10.1.31   jenkins.uro.net
@@ -33,6 +30,12 @@ data:
             10.10.1.38   minecraft.uro.net       
             fallthrough
         }
+
+        # 2. If not matched above, pass it to public internet resolvers
+        forward . 1.1.1.1 8.8.8.8 {
+            max_concurrent 1000
+        }
+        
         cache 30
         loop
         reload

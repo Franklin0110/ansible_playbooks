@@ -137,6 +137,9 @@ spec:
     k8s-app: coredns
   # Since you have an OpenVPN setup, this ClusterIP falls right into your HA pool!
   type: ClusterIP 
+  clusterIP: 10.102.233.245
+  clusterIPs:
+    - 10.102.233.245
   ports:
   - name: dns-udp
     port: 53

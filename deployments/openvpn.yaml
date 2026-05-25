@@ -1,0 +1,143 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: custom-dns
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-config
+  namespace: custom-dns
+data:
+  Corefile: |
+    .:53 {
+        errors
+        health {
+            lameduck 5s
+        }
+        ready
+        # This plugin serves standard kubernetes routing if you link it
+        # Otherwise, forward all public queries to upstream DNS (e.g., Google/Cloudflare)
+        forward . 1.1.1.1 8.8.8.8 {
+            max_concurrent 1000
+        }
+        hosts {
+            10.99.72.169 argocd.uro.net
+            10.10.1.31   jenkins.uro.net
+            10.10.1.147  kmaster01.c1.uro.net
+            10.10.1.119  kmaster02.c1.uro.net
+            10.10.1.57   kmaster03.c1.uro.net
+            10.10.1.134  knode01.c1.uro.net
+            10.10.1.33   knode02.c1.uro.net
+            10.10.1.158  knode03.c1.uro.net
+            10.10.1.38   minecraft.uro.net       
+            fallthrough
+        }
+        cache 30
+        loop
+        reload
+        loadbalance
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coredns
+  namespace: custom-dns
+  labels:
+    k8s-app: coredns
+spec:
+  replicas: 2 # High Availability: runs across multiple nodes
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      k8s-app: coredns
+  template:
+    metadata:
+      labels:
+        k8s-app: coredns
+    spec:
+      containers:
+      - name: coredns
+        image: coredns/coredns:1.11.1 # Standard official CoreDNS image
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: 170Mi
+          requests:
+            cpu: 100m
+            memory: 70Mi
+        args: [ "-conf", "/etc/coredns/Corefile" ]
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/coredns
+          readOnly: true
+        ports:
+        - name: dns-udp
+          containerPort: 53
+          protocol: UDP
+        - name: dns-tcp
+          containerPort: 53
+          protocol: TCP
+        - name: metrics
+          containerPort: 9153
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8181
+            scheme: HTTP
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_BIND_SERVICE # Required to bind to low port 53
+            drop:
+            - all
+          readOnlyRootFilesystem: true
+      dnsPolicy: Default
+      volumes:
+        - name: config-volume
+          configMap:
+            name: coredns-config
+            items:
+            - key: Corefile
+              path: Corefile
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coredns-service
+  namespace: custom-dns
+  labels:
+    k8s-app: coredns
+spec:
+  selector:
+    k8s-app: coredns
+  # Since you have an OpenVPN setup, this ClusterIP falls right into your HA pool!
+  type: ClusterIP 
+  ports:
+  - name: dns-udp
+    port: 53
+    protocol: UDP
+    targetPort: 53
+  - name: dns-tcp
+    port: 53
+    protocol: TCP
+    targetPort: 53

@@ -1,47 +1,40 @@
 # Kubernetes Cluster Automation with Ansible
 
-This repository contains all the Ansible playbooks, roles, and scripts required to provision, configure, and manage a highly available Kubernetes cluster from scratch.
+This repository contains all the Ansible playbooks, roles, and scripts required to provision, configure, and manage a highly available Kubernetes cluster from scratch. 
 
-🏗️ Architecture & Requirements
-To successfully run this project, you will need the following infrastructure components. Ubuntu 24.04 is highly recommended as the base operating system for all machines.
+## 🏗️ Architecture & Requirements
 
-Ansible Control Node: The main machine that will execute all playbooks. It must have the ansible package installed and require passwordless SSH access to all other nodes.
+To successfully run this project, you will need the following infrastructure components. **Ubuntu 24.04** is highly recommended as the base operating system for all machines.
 
-KVM Host: The virtualization server where the cluster machines will be created. The repository must be cloned to ~/ on this host with write access (SSH keys recommended).
+* **Ansible Control Node:** The main machine that will execute all playbooks. It must have the `ansible` package installed and require passwordless SSH access to all other nodes.
+* **KVM Host:** The virtualization server where the cluster machines will be created. The repository must be cloned to `~/` on this host with write access (SSH keys recommended).
+* **Primary Master Node (`kmaster01`):** The initial control plane node that bootstraps the cluster.
+* **Secondary Master Nodes (`kmasters`):** Additional control plane nodes for High Availability (HA).
+* **Worker Nodes (`knodes`):** The machines where your workloads and pods will run. 
 
-Primary Master Node (kmaster01): The initial control plane node that bootstraps the cluster.
+> **Note:** All nodes must be reachable via SSH from the Ansible Control Node.
 
-Secondary Master Nodes (kmasters): Additional control plane nodes for High Availability (HA).
+## ✨ Key Features & Capabilities
 
-Worker Nodes (knodes): The machines where your workloads and pods will run.
-
-Note: All nodes must be reachable via SSH from the Ansible Control Node.
-
-✨ Key Features & Capabilities
 This repository automates the heavy lifting of Kubernetes administration and comes pre-configured with production-grade tooling:
 
-Cluster Bootstrapping: A complete role to initialize a Kubernetes cluster from scratch.
+* **Cluster Bootstrapping:** A complete role to initialize a Kubernetes cluster from scratch.
+* **Highly Available Control Plane:** Architected to support an odd number of master nodes (e.g., 3 or 5) to maintain strict `etcd` quorum and prevent cluster state freezing during a node failure.
+* **Automated Scaling:** Roles and playbooks to seamlessly configure and join new `kmasters` and `knodes` into the existing cluster.
+* **VM Provisioning Script:** Easily spin up new KVM instances with a single command. 
+* **Advanced OpenVPN Routing:** Includes a configured OpenVPN endpoint that automatically pushes routes for the Kubernetes Pod CIDR and Service CIDR, allowing connected clients to natively ping and resolve internal cluster IPs.
+* **Internal DNS:** A fully configured internal DNS system for reliable local domain resolution across your cluster services.
+* **GitOps Ready (ArgoCD):** Pre-configured with ArgoCD for continuous, automated deployment of your applications and manifests.
+* **Full Observability:** Out-of-the-box deployment of Prometheus and Grafana to visualize cluster CPU/Memory usage, network traffic, and pod health.
 
-Highly Available Control Plane: Architected to support an odd number of master nodes (e.g., 3 or 5) to maintain strict etcd quorum and prevent cluster state freezing during a node failure.
+## 🚀 Quick Start Guide
 
-Automated Scaling: Roles and playbooks to seamlessly configure and join new kmasters and knodes into the existing cluster.
-
-VM Provisioning Script: Easily spin up new KVM instances with a single command.
-
-Advanced OpenVPN Routing: Includes a configured OpenVPN endpoint that automatically pushes routes for the Kubernetes Pod CIDR and Service CIDR, allowing connected clients to natively ping and resolve internal cluster IPs.
-
-Internal DNS: A fully configured internal DNS system for reliable local domain resolution across your cluster services.
-
-GitOps Ready (ArgoCD): Pre-configured with ArgoCD for continuous, automated deployment of your applications and manifests.
-
-Full Observability: Out-of-the-box deployment of Prometheus and Grafana to visualize cluster CPU/Memory usage, network traffic, and pod health.
-
-🚀 Quick Start Guide
-1. Provision a New Machine (Optional)
+### 1. Provision a New Machine (Optional)
 If you need to spin up a new node, use the included Bash script on your KVM host. For example, to create a new master node:
 
-Bash
+```bash
 bash ~/ansible_playbooks/scripts/create_machine.sh kmaster02
+
 Note: Every time you create a machine using this script, its IP/Hostname is automatically appended to the [staging] group in your Ansible inventory file. You must manually move it to the correct group (e.g., [kmasters] or [knodes]) before running the playbooks.
 
 2. Configure Your Environment
@@ -54,8 +47,9 @@ SSH Access: Ensure your Ansible machine can communicate with the newly provision
 3. Run the Playbooks
 We have modular playbooks depending on your goal. To execute the primary configuration, simply run:
 
-Bash
+```bash
 ansible-playbook ./playbooks/master_config.yaml
+
 Available Playbooks:
 
 create_cluster.yaml: Bootstraps the initial Kubernetes Control Plane.
@@ -67,7 +61,7 @@ join_new_knode.yaml: Adds a new Worker node to schedule workloads.
 💡 Next-Level Recommendations for this Cluster
 With HA, monitoring, and routing already implemented, here are the best practices to further harden and secure your cluster:
 
-1. External Load Balancing (HAProxy)
+## 1. External Load Balancing (HAProxy)
 Since you have HAProxy roles in your repository, ensure it is configured as an external load balancer sitting in front of your kmasters (targeting port 6443). All your worker nodes and external clients (including your Ansible automation) should communicate with the HAProxy virtual IP, rather than pointing to kmaster01. This guarantees true high availability if a master goes down.
 
 2. Security & Secrets Management

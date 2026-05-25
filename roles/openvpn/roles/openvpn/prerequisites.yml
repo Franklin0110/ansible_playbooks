@@ -7,6 +7,14 @@
     cache_valid_time: 3600
   when: ansible_os_family == "Debian"
 
+- name: Create OpenVPN service user
+  ansible.builtin.user:
+    name: openvpn
+    system: yes
+    shell: /usr/sbin/nologin
+    create_home: yes
+    state: present
+    
 - name: Install required system packages
   package:
     name:
@@ -20,5 +28,14 @@
       - openssl-devel
       - lzo-devel
       - pam-devel
+      - libnl-genl-3-dev
+      - libcap-ng-dev
+      - libssl-dev
+      - liblzo2-dev
+      - liblz4-dev
+      - libpam0g-dev
+
+sudo apt update && sudo apt install -y build-essential pkg-config libssl-dev liblzo2-dev libpam0g-dev liblz4-dev libsystemd-dev libpkcs11-helper1-dev libcap-ng-dev libnl-genl-3-dev
+  
     state: present
   ignore_errors: yes

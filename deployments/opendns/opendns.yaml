@@ -30,6 +30,7 @@ data:
             10.10.1.21   knode03.c1.uro.net
             10.10.1.188  openvpn.uro.net
             10.10.1.53   kvm01.c1.uro.net
+            10.10.1.11   minecraft.uro.net
             fallthrough
         }
 

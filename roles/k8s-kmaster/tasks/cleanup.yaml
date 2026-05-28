@@ -1,0 +1,106 @@
+---
+   - name: Create backup directory
+      file:
+        path: "{{ backup_dir }}"
+        state: directory
+        mode: '0700'
+
+    - name: Backup critical files
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        remote_src: yes
+      loop:
+        - { src: '/etc/kubernetes/admin.conf', dest: "{{ backup_dir }}/admin.conf" }
+        - { src: '/etc/kubernetes/pki', dest: "{{ backup_dir }}/pki" }
+        - { src: '/var/lib/etcd', dest: "{{ backup_dir }}/etcd" }
+      ignore_errors: yes
+
+    # Drain and reset
+    - name: Drain node
+      shell: kubectl drain {{ ansible_hostname }} --ignore-daemonsets --delete-emptydir-data --force
+      ignore_errors: yes
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+
+    - name: Reset kubeadm
+      command: kubeadm reset --force
+      ignore_errors: yes
+
+    # Stop services
+    - name: Stop Kubernetes and container services
+      systemd:
+        name: "{{ item }}"
+        state: stopped
+      loop:
+        - kubelet
+        - docker
+        - containerd
+      ignore_errors: yes
+
+    # Remove directories
+    - name: Remove Kubernetes directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/kubernetes
+        - /var/lib/kubelet
+        - /var/lib/etcd
+        - /etc/cni/net.d
+        - /opt/cni/bin
+        - /var/lib/cni
+        - /run/flannel
+        - /var/run/kubernetes
+        - /root/.kube
+        - "/home/{{ ansible_user }}/.kube"
+
+    # Clean iptables
+    - name: Clean iptables rules
+      shell: |
+        iptables -F
+        iptables -t nat -F
+        iptables -t mangle -F
+        iptables -X
+      ignore_errors: yes
+
+    # Clean network interfaces
+    - name: Remove CNI network interfaces
+      shell: |
+        ip link delete cni0 2>/dev/null || true
+        ip link delete flannel.1 2>/dev/null || true
+        ip link delete kube-ipvs0 2>/dev/null || true
+        ip link delete weave 2>/dev/null || true
+        ip link delete docker0 2>/dev/null || true
+        for iface in $(ip -o link show | awk -F': ' '{print $2}' | grep -E '^veth|^cali'); do
+          ip link delete "$iface" 2>/dev/null || true
+        done
+      ignore_errors: yes
+
+    # Clean containers
+    - name: Remove all containers and volumes
+      shell: |
+        docker rm -f $(docker ps -aq) 2>/dev/null || true
+        docker volume rm $(docker volume ls -q) 2>/dev/null || true
+        docker system prune -af --volumes 2>/dev/null || true
+        crictl rm $(crictl ps -aq) 2>/dev/null || true
+        crictl rmp $(crictl pods -q) 2>/dev/null || true
+      ignore_errors: yes
+
+    # Restart container runtime
+    - name: Restart container runtime
+      systemd:
+        name: "{{ item }}"
+        state: restarted
+        enabled: yes
+      loop:
+        - containerd
+        - docker
+      ignore_errors: yes
+
+    - name: Cleanup complete
+      debug:
+        msg:
+          - "✅ Kubernetes cluster cleanup complete"
+          - "Backup location: {{ backup_dir }}"
+          - "Ready for fresh cluster creation"

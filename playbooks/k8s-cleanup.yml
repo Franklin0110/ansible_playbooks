@@ -1,7 +1,7 @@
 ---
 - name: Join Cluster
-  hosts: 
-    -kmasters
-    -knodes
+  hosts:
+    - kmasters
+    - knodes
   roles:
-    -k8s_cleanup
+    - k8s_cleanup

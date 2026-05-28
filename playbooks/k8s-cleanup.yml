@@ -4,4 +4,4 @@
     - kmasters
     - knodes
   roles:
-    - k8s_cleanup
+    - k8s-cleanup

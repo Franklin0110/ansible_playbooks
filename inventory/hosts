@@ -1,24 +1,24 @@
 [machines]
 
 [jenkins]
-jenkins01 ansible_host=10.10.1.31
+jenkins01 ansible_host=10.10.1.202
 
 [kmasters]
-kmaster02 ansible_host=10.10.1.119
-kmaster03 ansible_host=10.10.1.57
+kmaster02 ansible_host=10.10.1.19
+kmaster03 ansible_host=10.10.1.21
 
 [kmasters_init]
-kmaster01 ansible_host=10.10.1.147
+kmaster01 ansible_host=10.10.1.100
 
 [knodes]
-knode01 ansible_host=10.10.1.134
-knode02 ansible_host=10.10.1.33
-knode03 ansible_host=10.10.1.158
+knode01 ansible_host=10.10.1.118
+knode02 ansible_host=10.10.1.126
+knode03 ansible_host=10.10.1.21
 
 [haproxy]
 
 [stagging]
-openvpn ansible_host=10.10.1.183
+openvpn ansible_host=10.10.1.188
 
 
 

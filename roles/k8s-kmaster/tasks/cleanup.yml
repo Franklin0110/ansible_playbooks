@@ -75,10 +75,3 @@
     - docker
   ignore_errors: yes
   become: yes
-
-- name: Cleanup complete
-  debug:
-    msg:
-      - "✅ Kubernetes cluster cleanup complete"
-      - "Backup location: {{ backup_dir }}"
-      - "Ready for fresh cluster creation"

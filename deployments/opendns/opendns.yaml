@@ -21,16 +21,15 @@ data:
         # 1. Evaluate your local network mappings first
         hosts {
             10.99.72.169 argocd.uro.net
-            10.10.1.31   jenkins.uro.net
-            10.10.1.147  kmaster01.c1.uro.net
-            10.10.1.119  kmaster02.c1.uro.net
-            10.10.1.57   kmaster03.c1.uro.net
-            10.10.1.134  knode01.c1.uro.net
-            10.10.1.33   knode02.c1.uro.net
-            10.10.1.158  knode03.c1.uro.net
-            10.10.1.138  minecraft.uro.net
-            10.10.1.183  openvpn.uro.net
-            10.10.1.210  kvm.c1.uro.net
+            10.10.1.202  jenkins.uro.net
+            10.10.1.100  kmaster01.c1.uro.net
+            10.10.1.19   kmaster02.c1.uro.net
+            10.10.1.21   kmaster03.c1.uro.net
+            10.10.1.118  knode01.c1.uro.net
+            10.10.1.126  knode02.c1.uro.net
+            10.10.1.21   knode03.c1.uro.net
+            10.10.1.188  openvpn.uro.net
+            10.10.1.53   kvm01.c1.uro.net
             fallthrough
         }
 

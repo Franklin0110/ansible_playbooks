@@ -1,4 +1,7 @@
 ---
+- name: Include cleanup tasks
+  include_tasks: cleanup.yaml
+
 - name: Include prerequisite tasks
   include_tasks: prerequisites.yml
 

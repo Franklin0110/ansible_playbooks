@@ -1,38 +1,5 @@
 ---
 
-- name: Pre-flight check - Ensure backup_dir is defined
-  assert:
-    that:
-      - backup_dir is defined
-      - backup_dir != '/'
-    fail_msg: "backup_dir must be defined and cannot be root."
-
-- name: Create backup directory
-  file:
-    path: "{{ backup_dir }}"
-    state: directory
-    mode: '0700'
-  become: yes
-
-- name: Backup critical files
-  synchronize:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    recursive: yes
-  loop:
-    - { src: '/etc/kubernetes/admin.conf', dest: "{{ backup_dir }}/admin.conf" }
-    - { src: '/etc/kubernetes/pki/', dest: "{{ backup_dir }}/pki/" }
-    - { src: '/var/lib/etcd/', dest: "{{ backup_dir }}/etcd/" }
-  ignore_errors: yes
-  become: yes
-
-- name: Drain node
-  shell: kubectl drain {{ ansible_hostname }} --ignore-daemonsets --delete-emptydir-data --force
-  environment:
-    KUBECONFIG: /etc/kubernetes/admin.conf
-  ignore_errors: yes
-  become: yes
-
 - name: Reset kubeadm
   command: kubeadm reset --force
   environment:
